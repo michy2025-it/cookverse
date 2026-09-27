@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CookVerse - Le Mie Ricette</title>
+  <meta name="theme-color" content="#2e7d32">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root { --bg: #121214; --card: #1e1e24; --accent: #4caf50; --text: #ffffff; --sec: #a0a0ab; --border: #2e2e38; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+    header { background-color: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+    .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+    .nav-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; }
+    .tab-btn { padding: 8px 12px; background: var(--card); color: var(--sec); border: 1px solid var(--border); border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+    .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .recipe-card { background: var(--card); padding: 14px 15px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
+    .btn { background: var(--accent); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .portion-box { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+    .ingredients-list { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+    .ingredient-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .ingredient-item:last-child { border-bottom: none; }
+    .steps-box { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); line-height: 1.6; }
+    .step-item { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🍳 CookVerse</div>
+    <button class="btn btn-outline" id="backBtn" style="display:none;" onclick="showList()">← Ricette</button>
+  </header>
+
+  <div class="container">
+    <div id="listView">
+      <div class="nav-tabs">
+        <button class="tab-btn active" id="tab-antipasti" onclick="switchCategory('antipasti')">🥗 Antipasti</button>
+        <button class="tab-btn" id="tab-primi" onclick="switchCategory('primi')">🍝 Primi</button>
+        <button class="tab-btn" id="tab-secondi" onclick="switchCategory('secondi')">🥩 Secondi</button>
+        <button class="tab-btn" id="tab-contorni" onclick="switchCategory('contorni')">🥦 Contorni</button>
+        <button class="tab-btn" id="tab-dolci" onclick="switchCategory('dolci')">🍰 Dolci</button>
+      </div>
+      <div id="recipesList">Caricamento ricette...</div>
+    </div>
+
+    <div id="recipeView" style="display:none;">
+      <h2 id="recipeTitle" style="margin-bottom: 10px;"></h2>
+      
+      <div class="portion-box">
+        <span>Porzioni (persone):</span>
+        <button class="btn btn-outline" onclick="changePortions(-1)">-</button>
+        <span id="portionVal" style="font-weight:bold; font-size: 1.2rem; min-width:20px; text-align:center;">4</span>
+        <button class="btn btn-outline" onclick="changePortions(1)">+</button>
+      </div>
+
+      <h3 style="color: var(--accent); margin-bottom: 8px;">🛒 Ingredienti</h3>
+      <div class="ingredients-list" id="ingredientsList"></div>
+
+      <h3 style="color: var(--accent); margin-bottom: 8px;">👨‍🍳 Preparazione</h3>
+      <div class="steps-box" id="stepsBox"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentCategory = 'primi';
+    let currentRecipe = null;
+    let currentPortions = 4;
+    let recipesData = [];
+
+    async function loadRecipes() {
+      try {
+        let res = await fetch('./data/recipes.json');
+        if(res.ok) {
+          recipesData = await res.json();
+          renderList();
+        }
+      } catch(e) { console.log('Errore caricamento ricette', e); }
+    }
+
+    function switchCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tab-' + cat).classList.add('active');
+      renderList();
+    }
+
+    function renderList() {
+      const container = document.getElementById('recipesList');
+      container.innerHTML = '';
+      
+      const filtered = recipesData.filter(r => r.category === currentCategory);
+      
+      if(filtered.length === 0) {
+        container.innerHTML = '<p style="color:var(--sec); padding:20px 0;">Nessuna ricetta in questa categoria.</p>';
+        return;
+      }
+
+      filtered.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.onclick = () => openRecipe(recipe);
+        card.innerHTML = `<div><strong>${recipe.title}</strong><br><small style="color:var(--sec)">Base per ${recipe.basePortions} persone</small></div><span style="color:var(--accent)">Vedi →</span>`;
+        container.appendChild(card);
+      });
+    }
+
+    function openRecipe(recipe) {
+      currentRecipe = recipe;
+      currentPortions = recipe.basePortions;
+      document.getElementById('portionVal').innerText = currentPortions;
+      document.getElementById('recipeTitle').innerText = recipe.title;
+      document.getElementById('listView').style.display = 'none';
+      document.getElementById('recipeView').style.display = 'block';
+      document.getElementById('backBtn').style.display = 'block';
+      renderRecipeDetails();
+    }
+
+    function showList() {
+      document.getElementById('listView').style.display = 'block';
+      document.getElementById('recipeView').style.display = 'none';
+      document.getElementById('backBtn').style.display = 'none';
+    }
+
+    function changePortions(delta) {
+      if(currentPortions + delta >= 1) {
+        currentPortions += delta;
+        document.getElementById('portionVal').innerText = currentPortions;
+        renderRecipeDetails();
+      }
+    }
+
+    function renderRecipeDetails() {
+      if(!currentRecipe) return;
+
+      const factor = currentPortions / currentRecipe.basePortions;
+      const ingContainer = document.getElementById('ingredientsList');
+      ingContainer.innerHTML = '';
+
+      currentRecipe.ingredients.forEach(ing => {
+        const item = document.createElement('div');
+        item.className = 'ingredient-item';
+        
+        let qtyText = '';
+        if(ing.amount) {
+          let calculated = Math.round((ing.amount * factor) * 10) / 10;
+          qtyText = `${calculated} ${ing.unit}`;
+        } else {
+          qtyText = ing.unit || 'q.b.';
+        }
+
+        item.innerHTML = `<span>${ing.name}</span><strong>${qtyText}</strong>`;
+        ingContainer.appendChild(item);
+      });
+
+      const stepsContainer = document.getElementById('stepsBox');
+      stepsContainer.innerHTML = '';
+      currentRecipe.steps.forEach((step, idx) => {
+        const st = document.createElement('div');
+        st.className = 'step-item';
+        st.innerHTML = `<strong>${idx + 1}.</strong> ${step}`;
+        stepsContainer.appendChild(st);
+      });
+    }
+
+    loadRecipes();
+  </script>
+</body>
+</html>
