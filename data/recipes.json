@@ -1,0 +1,45 @@
+[
+  {
+    "id": "porchetta-weber-57",
+    "title": "Porchetta Artigianale al Weber 57",
+    "category": "secondi",
+    "basePortions": 10,
+    "ingredients": [
+      { "name": "Pancettone con cotenna (30x40cm)", "amount": 2.2, "unit": "kg" },
+      { "name": "Filone / Lonza di maiale", "amount": 900, "unit": "g" },
+      { "name": "Sale fino (interno)", "amount": 40, "unit": "g" },
+      { "name": "Pepe nero macinato", "amount": 10, "unit": "g" },
+      { "name": "Aglio fresco tritato", "amount": 4, "unit": "spicchi" },
+      { "name": "Rosmarino tritato", "amount": 2, "unit": "cucchiai" },
+      { "name": "Finocchietto selvatico", "amount": 1.5, "unit": "cucchiai" },
+      { "name": "Chunk di legno di melo", "amount": 1, "unit": "pezzo" },
+      { "name": "Vino bianco per vaschetta", "amount": 100, "unit": "ml" }
+    ],
+    "steps": [
+      {
+        "text": "Pratica punture oblique profonde 2-3 mm sulla cotenna senza toccare la carne magra. Condisci l'interno di pancetta e lonza con sale, pepe, aglio, rosmarino e finocchietto.",
+        "image": "img/porchetta-preparazione.jpg"
+      },
+      {
+        "text": "Arrotola il tronchetto (Ø 14-16cm x 30cm) e lega stretto con spago da cucina ogni 2-3 cm. Strofina la cotenna con solo sale fino.",
+        "image": "img/porchetta-legatura.jpg"
+      },
+      {
+        "text": "Lascia riposare la porchetta in frigo scoperta su una griglia per 12-24 ore per asciugare la cotenna.",
+        "image": ""
+      },
+      {
+        "text": "Aclimata la carne a temp. ambiente per 45-60 min. Prepara il Weber 57 per cottura indiretta (36-40 bricchetti divisi nei 2 cestelli) con vaschetta di acqua e vino al centro.",
+        "image": "img/porchetta-weber-setup.jpg"
+      },
+      {
+        "text": "Fase 1: Inserisci la porchetta con 1 chunk di melo e cuoci a 220°C per 10-15 minuti. Fase 2: Stabilizza a 180°C fino a 65°C al cuore. Fase 3: Porta a 200°C+ fino a 70°C-75°C al cuore.",
+        "image": "img/porchetta-cottura.jpg"
+      },
+      {
+        "text": "Estrai la porchetta con la cotenna ben dorata e croccante. Lascia riposare 20 minuti su una griglietta prima di affettare.",
+        "image": "img/porchetta-finale.jpg"
+      }
+    ]
+  }
+]
